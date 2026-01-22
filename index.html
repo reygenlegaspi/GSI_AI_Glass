@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Static Chatbot — Full Frosted Glass</title>
+  <title>Static Chatbot — Frosted Glass</title>
 
+  <!-- Bot Framework Web Chat -->
   <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 
   <style>
     :root {
-      --primary-color: #06444a;
+      --primary-color: #55C1B1;
       --header-textColor: #fff;
       --chat-width: 100%;
       --chat-height: 100vh;
@@ -19,13 +20,10 @@
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
       font-family: system-ui, sans-serif;
-      /* Keep parent transparent—frosting happens inside the popup */
-      background: transparent;
-    }
+      height: 100%;
 
-    /* Outer popup */
+    /* Outer popup with frosted glass */
     #chatbot-popup {
       position: fixed;
       top: 50%;
@@ -38,22 +36,22 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
 
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       overflow: hidden;
       z-index: 999;
     }
 
     /* Header bar */
     #chatbot-header {
-      background: rgba(6, 68, 74, 0.4);
+      background: rgba(85, 193, 177, 0.6);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      color: var(--header-textColor);
       padding: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: var(--header-textColor);
       height: var(--header-height);
     }
 
@@ -67,32 +65,11 @@
       background: transparent !important;
     }
 
-    /* Force transcript container to be frosted (stable selector by role) */
+    /* Transcript container frosted */
     #webchat > div[role="complementary"] {
       background: rgba(255, 255, 255, 0.25) !important;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-    }
-
-    /* Frosted bubbles (both bot and user) */
-    #webchat .webchat__bubble {
-      background: rgba(255, 255, 255, 0.25) !important;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      color: #06444a !important;
-      border-radius: 8px !important;
-      margin: 8px !important;
-    }
-    #webchat .webchat__bubble__content {
-      padding: 8px 12px !important;
-    }
-
-    /* Frosted send box */
-    #webchat .webchat__send-box {
-      background: rgba(255, 255, 255, 0.25) !important;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border-top: 1px solid rgba(85, 193, 177, 0.4) !important;
     }
 
     button {
@@ -103,12 +80,24 @@
       cursor: pointer;
       padding: 4px 8px;
     }
+
+    /* Bubble spacing */
+    #webchat .webchat__bubble {
+      max-width: 85% !important;
+      margin: 8px !important;
+      border-radius: 8px !important;
+    }
+    #webchat .webchat__bubble__content {
+      padding: 8px 12px !important;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Chatbot Container -->
   <div id="chatbot-popup" role="complementary" aria-label="Chat Assistant">
     <div id="chatbot-header">
-      <span>BE.Bot (beta)</span>
+      <span>Assistant</span>
       <div>
         <button onclick="restartConversation()">⟳</button>
       </div>
@@ -119,61 +108,39 @@
   <script>
     const tokenEndpoint = "https://default605b6368f7bb49c198403a897e70b5.31.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr7a8_gsiWebsiteAiTest/directline/token?api-version=2022-03-01-preview";
 
-    // 1) StyleOptions: remove opaque whites and use translucent RGBA
     const styleOptions = {
-      accent: "#06444a",
+      accent: "#55C1B1",
       hideUploadButton: true,
       sendBoxHeight: 50,
-
-      // Root background must be transparent
       backgroundColor: "transparent",
 
-      // Avatars
+      // Bot avatar
       botAvatarImage: "https://i.imgur.com/pKReqIG.png",
       botAvatarInitials: "B",
-      botAvatarBackgroundColor: "transparent",
+      botAvatarBackgroundColor: "#FFFFFF",
 
-      // Bot bubbles (translucent)
-      bubbleBackground: "rgba(255,255,255,0.25)",
+      // User avatar
+      userAvatarInitials: "U",
+
+      // Bot bubbles (keep colors)
+      bubbleBackground: "#eef8f7",
       bubbleTextColor: "#06444A",
-      bubbleBorderColor: "transparent",
-      bubbleBorderRadius: 8,
 
-      // User bubbles (translucent)
-      bubbleFromUserBackground: "rgba(255,255,255,0.25)",
+      // User bubbles (keep colors)
+      bubbleFromUserBackground: "#ddf2ef",
       bubbleFromUserTextColor: "#06444A",
-      bubbleFromUserBorderColor: "transparent",
-      bubbleFromUserBorderRadius: 8,
 
-      // Send box (translucent)
+      // Send box styling (frosted)
       sendBoxBackground: "rgba(255,255,255,0.25)",
       sendBoxTextColor: "#06444A",
-      sendBoxBorderTop: "solid 1px rgba(85,193,177,0.4)",
+      sendBoxBorderTop: "solid 1px #55C1B1",
       sendBoxPlaceholderColor: "#032225"
     };
 
-    // 2) StyleSet: force internal containers to be transparent
-    const styleSet = window.WebChat.createStyleSet({
-      backgroundColor: 'transparent',
-      bubbleBackground: 'rgba(255,255,255,0.25)',
-      bubbleFromUserBackground: 'rgba(255,255,255,0.25)',
-      sendBoxBackground: 'rgba(255,255,255,0.25)'
-    });
-
-    // Ensure root/transcript are transparent (these keys override generated containers)
-    styleSet.root = {
-      ...styleSet.root,
-      backgroundColor: 'transparent'
-    };
-    styleSet.transcript = {
-      ...styleSet.transcript,
-      backgroundColor: 'transparent'
-    };
-    styleSet.sendBox = {
-      ...styleSet.sendBox,
-      backgroundColor: 'rgba(255,255,255,0.25)',
-      borderTop: '1px solid rgba(85,193,177,0.4)'
-    };
+    // Force transcript/root transparent
+    const styleSet = window.WebChat.createStyleSet(styleOptions);
+    styleSet.root = { ...styleSet.root, backgroundColor: 'transparent' };
+    styleSet.transcript = { ...styleSet.transcript, backgroundColor: 'transparent' };
 
     function createCustomStore() {
       return window.WebChat.createStore({}, ({ dispatch }) => next => action => {
@@ -199,13 +166,7 @@
       const { token } = await response.json();
       const newDirectLine = window.WebChat.createDirectLine({ token });
       window.WebChat.renderWebChat(
-        {
-          directLine: newDirectLine,
-          styleOptions,
-          styleSet,
-          store: createCustomStore(),
-          locale: "en-US"
-        },
+        { directLine: newDirectLine, styleOptions, styleSet, store: createCustomStore(), locale: "en-US" },
         document.getElementById("webchat")
       );
     }
@@ -215,13 +176,7 @@
       const { token } = await response.json();
       const directLine = window.WebChat.createDirectLine({ token });
       window.WebChat.renderWebChat(
-        {
-          directLine,
-          styleOptions,
-          styleSet,
-          store: createCustomStore(),
-          locale: "en-US"
-        },
+        { directLine, styleOptions, styleSet, store: createCustomStore(), locale: "en-US" },
         document.getElementById("webchat")
       );
     }
