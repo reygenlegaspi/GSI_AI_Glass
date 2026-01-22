@@ -29,14 +29,13 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: var(--chat-width);
-      height: var(--chat-height);
+width: 400px; height: 600px;
 
       background: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
 
-      border-radius: 8px;
+      border-radius: 0px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       overflow: hidden;
       z-index: 999;
@@ -70,6 +69,7 @@
       background: rgba(255, 255, 255, 0.25) !important;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+flex: 1 1 auto; /* transcript grows */ overflow-y: auto; /* scroll if needed */
     }
 
     button {
@@ -85,14 +85,15 @@
     #webchat .webchat__bubble {
       max-width: 85% !important;
       margin: 8px !important;
-      border-radius: 8px !important;
+      border-radius: 0px !important;
     }
     #webchat .webchat__bubble__content {
       padding: 8px 12px !important;
     }
       
   #webchat .webchat__send-box {
-    max-height: 60px !important;
+    min-height: 100px !important;
+flex: 0 0 auto;
   }
 
   </style>
@@ -129,8 +130,8 @@
       bubbleTextColor: "#06444A",
 
       // User bubbles (keep colors)
-      bubbleFromUserBackground: "#ddf2ef",
-      bubbleFromUserTextColor: "#06444A",
+      bubbleFromUserBackground: "#06444A",
+      bubbleFromUserTextColor: "#ffffff",
 
       // Send box styling (frosted)
       sendBoxBackground: "rgba(255,255,255,0.25)",
@@ -187,4 +188,5 @@
   </script>
 </body>
 </html>
+
 
